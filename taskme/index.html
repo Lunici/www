@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>TaskMe · Send tasks. Keep everyone on track.</title>
+  <meta name="description" content="TaskMe is a task app for the people close to you. Send tasks to family and friends, create tasks for yourself, set deadlines and get reminders. Coming soon to Google Play and the App Store.">
+  <link rel="canonical" href="https://www.gerbomind.com/taskme/">
+  <link rel="icon" type="image/svg+xml" href="./assets/logo.svg">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="TaskMe">
+  <meta property="og:title" content="TaskMe · Send tasks. Keep everyone on track.">
+  <meta property="og:description" content="Send tasks to the people close to you, set a deadline, add a reminder — and know the moment it’s done.">
+  <meta property="og:url" content="https://www.gerbomind.com/taskme/">
+  <style>
+    :root {
+      color-scheme: light;
+      --primary: #5a34cf;
+      --primary-pressed: #4526a8;
+      --tertiary: #eeedfe;
+      --on-surface: #1c1b1f;
+      --on-surface-variant: #49454f;
+      --muted: #79747e;
+      --outline: #e0e0e0;
+      --track: #f3f4f6;
+      --page-tint: #f8f7fb;
+      --surface: #fff;
+      --radius: 20px;
+      /* AppShadow levels from the app (LOW / MEDIUM / HIGH) */
+      --shadow-low: 0 2px 6px rgba(0, 0, 0, .12);
+      --shadow-medium: 0 4px 10px rgba(0, 0, 0, .14);
+      --shadow-high: 0 6px 16px rgba(0, 0, 0, .16);
+      --shadow-device: 0 24px 48px rgba(28, 20, 66, .18), 0 60px 120px rgba(28, 20, 66, .16);
+      font-family: Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; color: var(--on-surface); background: var(--surface); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    a { color: var(--primary); text-decoration: none; }
+    img, svg { display: block; }
+    svg { fill: currentColor; }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+    [hidden] { display: none !important; }
+
+    /* ---------- Site header ---------- */
+    .header { position: sticky; top: 0; z-index: 20; background: rgba(255, 255, 255, .88); backdrop-filter: saturate(180%) blur(16px); -webkit-backdrop-filter: saturate(180%) blur(16px); border-bottom: 1px solid transparent; transition: border-color .2s; }
+    .header.scrolled { border-bottom-color: var(--outline); }
+    .header .wrap { display: flex; align-items: center; gap: 32px; height: 68px; }
+    .brand img { width: 124px; height: auto; }
+    .nav { display: flex; gap: 28px; margin-right: auto; }
+    .nav a { color: var(--on-surface-variant); font-size: 15px; font-weight: 500; }
+    .nav a:hover { color: var(--on-surface); }
+    .lang { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); padding: 3px; border-radius: 999px; background: var(--track); }
+    .lang .thumb { position: absolute; top: 3px; bottom: 3px; left: 3px; width: calc((100% - 6px) / 3); border-radius: 999px; background: var(--surface); box-shadow: var(--shadow-low); transform: translateX(calc(var(--index, 0) * 100%)); transition: transform .25s cubic-bezier(.4, 0, .2, 1); }
+    .lang button { position: relative; z-index: 1; min-width: 50px; border: 0; padding: 6px 10px; color: var(--on-surface-variant); background: transparent; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .lang button[aria-pressed="true"] { color: var(--on-surface); font-weight: 700; }
+
+    /* ---------- Store buttons ---------- */
+    .stores { display: flex; flex-wrap: wrap; gap: 12px; }
+    .store { display: inline-flex; flex-direction: column; justify-content: center; min-width: 168px; height: 56px; padding: 0 22px; border-radius: 14px; background: var(--on-surface); color: #fff; line-height: 1.15; transition: transform .15s, background .15s; }
+    .store small { font-size: 11px; font-weight: 500; opacity: .75; }
+    .store span { font-size: 18px; font-weight: 700; letter-spacing: -.01em; }
+    a.store:hover { background: #000; transform: translateY(-1px); }
+    .store.soon { cursor: default; }
+    .stores.light .store { background: #fff; color: var(--on-surface); }
+
+    /* ---------- Hero ---------- */
+    .hero { position: relative; overflow: hidden; padding: 64px 0 88px; background:
+      radial-gradient(860px 520px at 82% 8%, rgba(155, 140, 255, .26), transparent 62%),
+      radial-gradient(700px 420px at 0% 100%, rgba(238, 237, 254, .9), transparent 70%), var(--surface); }
+    .hero .stage { padding-top: 96px; }
+    .hero .wrap { display: grid; grid-template-columns: 1.05fr .95fr; gap: 48px; align-items: center; }
+    .pill { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px 6px 6px; border-radius: 999px; background: var(--surface); box-shadow: var(--shadow-low); color: var(--on-surface-variant); font-size: 13px; font-weight: 500; }
+    .pill img { width: 24px; height: 24px; }
+    .hero h1 { margin: 22px 0 18px; font-size: clamp(40px, 5.4vw, 64px); line-height: 1.1; letter-spacing: -.025em; font-weight: 800; white-space: pre-line; }
+    .hero h1 em { font-style: normal; color: var(--primary); }
+    .hero .lead { max-width: 520px; margin: 0 0 32px; color: var(--on-surface-variant); font-size: 19px; }
+
+    /* ---------- Device frame ---------- */
+    .stage { position: relative; display: flex; justify-content: center; padding: 28px 0; }
+    .device { position: relative; flex: none; width: 306px; height: 650px; padding: 11px; border-radius: 54px; background: #121214; box-shadow: 0 0 0 2px #4a4a4f, 0 0 0 3px #1c1c1e, var(--shadow-device); }
+    .device::before, .device::after { content: ""; position: absolute; width: 3px; border-radius: 2px; background: #3a3a3e; }
+    .device::before { left: -5px; top: 118px; height: 56px; box-shadow: 0 72px 0 #3a3a3e; }
+    .device::after { right: -5px; top: 160px; height: 84px; }
+    .screen { position: relative; height: 100%; overflow: hidden; border-radius: 43px; background: #fff; display: flex; flex-direction: column; font-size: 13px; line-height: 1.35; }
+    .island { position: absolute; z-index: 4; top: 11px; left: 50%; width: 86px; height: 25px; margin-left: -43px; border-radius: 999px; background: #000; }
+    .home-ind { position: absolute; z-index: 4; bottom: 7px; left: 50%; width: 108px; height: 4px; margin-left: -54px; border-radius: 999px; background: #1c1b1f; }
+    .sb { display: grid; grid-template-columns: 1fr 98px 1fr; align-items: center; justify-items: center; height: 46px; padding: 0 8px; font-size: 13px; font-weight: 600; letter-spacing: -.01em; }
+    .sb .ind { grid-column: 3; }
+    .sb .ind { display: flex; align-items: center; gap: 5px; }
+    .sb .ind svg { height: 10px; width: auto; }
+
+    /* Tasks screen (TasksScreen.kt) */
+    .t-head { display: flex; align-items: center; height: 48px; padding: 10px 22px 0; }
+    .t-head b { font-size: 24px; font-weight: 700; }
+    .t-head .hist { margin-left: auto; width: 29px; height: 29px; display: grid; place-items: center; border-radius: 50%; background: #fff; box-shadow: var(--shadow-low); color: var(--primary); }
+    .t-head .hist svg { width: 19px; height: 19px; }
+    .t-list { padding: 6px 13px 0; }
+    .sec { display: flex; padding: 13px 6px 6px; color: var(--on-surface-variant); font-size: 11.5px; }
+    .sec b { flex: 1; }
+    .card { border-radius: 16px; background: #fff; box-shadow: var(--shadow-low); }
+    .row { display: flex; align-items: center; padding: 10px 13px; }
+    .card .row + .row, .card .div { border-top: 1px solid var(--outline); }
+    .card .row + .row { box-shadow: none; }
+    .div { margin: 0 13px; }
+    .card .row + .row { border-top: 0; position: relative; }
+    .card .row + .row::before { content: ""; position: absolute; top: 0; left: 13px; right: 13px; border-top: 1px solid var(--outline); }
+    .av { flex: none; width: 29px; height: 29px; border-radius: 50%; }
+    .row .txt { flex: 1; min-width: 0; margin-left: 10px; }
+    .row .tt { overflow: hidden; font-size: 13px; font-weight: 700; white-space: nowrap; text-overflow: ellipsis; }
+    .row .mt { overflow: hidden; color: var(--on-surface-variant); font-size: 10px; white-space: nowrap; text-overflow: ellipsis; }
+    .row .bell { flex: none; width: 14px; height: 14px; margin: 0 6px 0 6px; }
+    .tag { flex: none; margin-left: 6px; padding: 3px 6px; border-radius: 6px; font-size: 9.5px; font-weight: 700; }
+    .tag.progress { color: var(--primary); background: var(--tertiary); }
+    .tag.pending { color: #424242; background: #f3f4f6; }
+    .tag.done { color: #2e7d32; background: #e8f5e9; }
+    .fab { position: absolute; right: 19px; bottom: 96px; width: 45px; height: 45px; display: grid; place-items: center; border-radius: 50%; background: #fff; color: var(--primary); box-shadow: var(--shadow-medium); }
+    .fab svg { width: 19px; height: 19px; }
+    .navbar { margin-top: auto; display: grid; grid-template-columns: repeat(3, 1fr); height: 82px; padding: 8px 6px 26px; background: #fff; box-shadow: 0 -2px 6px rgba(0, 0, 0, .12); }
+    .navbar span { display: grid; justify-items: center; align-content: center; gap: 3px; color: var(--on-surface-variant); font-size: 10px; }
+    .navbar span.on { color: var(--primary); font-weight: 700; }
+    .navbar svg { width: 19px; height: 19px; }
+    .navbar img { width: 25px; height: 25px; border-radius: 50%; }
+
+    /* New task sheet (NewTaskSheet.kt + DueAtCard.kt) */
+    .scrim { position: absolute; inset: 0; z-index: 1; background: rgba(0, 0, 0, .32); }
+    .sheet { position: absolute; z-index: 2; left: 0; right: 0; bottom: 0; padding-bottom: 86px; border-radius: 22px 22px 0 0; background: #fff; }
+    .handle { width: 26px; height: 3px; margin: 14px auto 14px; border-radius: 2px; background: rgba(73, 69, 79, .4); }
+    .sheet-body { padding: 0 13px; }
+    .rcp { display: flex; align-items: center; padding: 10px 10px 10px 13px; }
+    .rcp .av { width: 32px; height: 32px; }
+    .rcp .txt { flex: 1; margin-left: 10px; }
+    .rcp .nm { font-size: 13px; font-weight: 700; }
+    .rcp .id { color: var(--on-surface-variant); font-size: 10px; }
+    .chev { flex: none; width: 16px; height: 16px; color: var(--on-surface-variant); }
+    .chev svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .ttl { padding: 13px; font-size: 18px; line-height: 1.3; font-weight: 700; }
+    .dsc { min-height: 70px; padding: 13px; color: var(--on-surface); font-size: 13px; }
+    .gap { height: 13px; }
+    .tog { display: flex; align-items: center; padding: 10px 13px; }
+    .tog > svg { width: 16px; height: 16px; color: var(--primary); }
+    .tog b { flex: 1; margin-left: 10px; font-size: 12px; }
+    .sw { position: relative; width: 42px; height: 26px; border-radius: 999px; background: var(--primary); }
+    .sw::after { content: ""; position: absolute; top: 3.5px; right: 3.5px; width: 19px; height: 19px; border-radius: 50%; background: #fff; }
+    .val { display: flex; align-items: center; padding: 11px 10px 11px 13px; }
+    .val .lb { flex: 1; color: var(--on-surface-variant); font-size: 13px; }
+    .val .vv { margin-right: 6px; text-align: right; }
+    .val .vv b { display: block; font-size: 13px; }
+    .val .vv small { display: block; color: var(--on-surface-variant); font-size: 9.5px; }
+    .chips { display: flex; gap: 4px; margin: 0 13px 10px; overflow-x: auto; scrollbar-width: none; }
+    .chips::-webkit-scrollbar { display: none; }
+    .chip { flex: none; padding: 4px 6px; border: 1px solid var(--outline); border-radius: 999px; font-size: 9px; font-weight: 700; white-space: nowrap; }
+    .chip.on { border-color: var(--primary); background: var(--primary); color: #fff; }
+    .submit { position: absolute; left: 13px; right: 13px; bottom: 28px; display: flex; align-items: center; justify-content: center; gap: 6px; height: 42px; border-radius: 999px; background: var(--primary); color: #fff; font-size: 13px; font-weight: 700; box-shadow: var(--shadow-medium); }
+    .submit svg { width: 16px; height: 16px; }
+
+    /* Android notification */
+    .notif { position: absolute; z-index: 5; top: -10px; left: -120px; width: 270px; padding: 12px 14px; border-radius: 22px; background: rgba(255, 255, 255, .97); box-shadow: var(--shadow-device); }
+    .notif .app { display: flex; align-items: center; gap: 6px; color: var(--on-surface-variant); font-size: 11px; }
+    .notif .app img { width: 16px; height: 16px; }
+    .notif .nt { margin-top: 6px; font-size: 13px; font-weight: 700; }
+    .notif .nb { color: var(--on-surface-variant); font-size: 13px; line-height: 1.4; }
+
+    /* ---------- Sections ---------- */
+    section.block { padding: 104px 0; }
+    .tinted { background: var(--page-tint); }
+    .eyebrow { color: var(--primary); font-size: 14px; font-weight: 700; letter-spacing: .02em; }
+    h2 { margin: 10px 0 14px; font-size: clamp(30px, 3.6vw, 42px); line-height: 1.15; letter-spacing: -.02em; font-weight: 800; }
+    .head { max-width: 640px; margin-bottom: 52px; }
+    .head.center { margin-left: auto; margin-right: auto; text-align: center; }
+    .head p { margin: 0; color: var(--on-surface-variant); font-size: 18px; }
+
+    .showcase .wrap { display: grid; grid-template-columns: .95fr 1.05fr; gap: 64px; align-items: center; }
+    .points { margin: 32px 0 0; padding: 0; list-style: none; }
+    .points li { display: flex; gap: 16px; }
+    .points li + li { margin-top: 24px; }
+    .points .ic { flex: none; width: 44px; height: 44px; display: grid; place-items: center; border-radius: 14px; background: var(--tertiary); color: var(--primary); }
+    .points .ic svg { width: 24px; height: 24px; }
+    .points h3 { margin: 0 0 4px; font-size: 18px; font-weight: 700; }
+    .points p { margin: 0; color: var(--on-surface-variant); font-size: 16px; }
+
+    .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .feature { padding: 28px; border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow-low); }
+    .feature .ic { width: 48px; height: 48px; display: grid; place-items: center; margin-bottom: 20px; border-radius: 14px; background: var(--tertiary); color: var(--primary); }
+    .feature .ic svg { width: 26px; height: 26px; }
+    .feature h3 { margin: 0 0 8px; font-size: 19px; font-weight: 700; }
+    .feature p { margin: 0; color: var(--on-surface-variant); font-size: 15.5px; }
+
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; counter-reset: step; }
+    .step { padding: 28px; border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow-low); }
+    .step::before { counter-increment: step; content: counter(step); display: grid; place-items: center; width: 36px; height: 36px; margin-bottom: 18px; border-radius: 50%; background: var(--primary); color: #fff; font-weight: 800; }
+    .step h3 { margin: 0 0 8px; font-size: 19px; font-weight: 700; }
+    .step p { margin: 0; color: var(--on-surface-variant); font-size: 15px; }
+
+    .cta { padding: 104px 0; }
+    .cta-box { position: relative; overflow: hidden; display: flex; align-items: center; justify-content: space-between; gap: 32px; padding: 56px; border-radius: 32px; color: #fff; background: linear-gradient(135deg, #5a34cf 0%, #7a5cf0 55%, #9b8cff 100%); box-shadow: 0 24px 60px rgba(90, 52, 207, .28); }
+    .cta-box::after { content: ""; position: absolute; right: -70px; bottom: -110px; width: 340px; height: 340px; background: url(./assets/logo.svg) center / contain no-repeat; opacity: .16; filter: brightness(5); pointer-events: none; }
+    .cta-box h2 { margin: 0 0 8px; color: #fff; }
+    .cta-box p { margin: 0; color: rgba(255, 255, 255, .85); font-size: 18px; }
+    .cta-box .stores { position: relative; z-index: 1; flex: none; }
+
+    footer { border-top: 1px solid var(--outline); padding: 40px 0 48px; color: var(--muted); font-size: 14px; }
+    footer .wrap { display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: start; }
+    footer img { width: 104px; margin-bottom: 12px; }
+    footer nav { display: flex; flex-wrap: wrap; gap: 24px; }
+    footer nav a { color: var(--on-surface-variant); font-weight: 500; }
+    footer nav a:hover { color: var(--primary); }
+    footer p { margin: 0; }
+
+    @media (max-width: 960px) {
+      .nav { display: none; }
+      .header .wrap { justify-content: space-between; }
+      .hero { padding: 40px 0 64px; }
+      .hero .wrap, .showcase .wrap { grid-template-columns: 1fr; gap: 40px; }
+      .showcase .stage { order: 2; }
+      .features, .steps { grid-template-columns: 1fr; }
+      .cta-box { flex-direction: column; align-items: flex-start; padding: 40px 28px; }
+    }
+    @media (max-width: 640px) {
+      .wrap { padding: 0 18px; }
+      .brand img { width: 108px; }
+      .lang button { min-width: 42px; padding: 5px 7px; font-size: 12px; }
+      .hero .lead { font-size: 17px; }
+      .store { min-width: 0; flex: 1; }
+      section.block, .cta { padding: 72px 0; }
+      .head { margin-bottom: 36px; }
+      .notif { left: 50%; top: 0; transform: translateX(-50%); width: 280px; }
+      .hero .stage { padding-top: 104px; }
+      footer .wrap { grid-template-columns: 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="wrap">
+      <a class="brand" href="./" aria-label="TaskMe"><img src="./assets/logo_text.svg" alt="TaskMe"></a>
+      <nav class="nav" aria-label="Main">
+        <a href="#send" data-i18n="nav_send">Send tasks</a>
+        <a href="#features" data-i18n="nav_features">Features</a>
+        <a href="#how" data-i18n="nav_how">How it works</a>
+      </nav>
+      <div class="lang" role="group" aria-label="Language">
+        <span class="thumb" aria-hidden="true"></span>
+        <button type="button" data-language="en" aria-pressed="true">EN</button>
+        <button type="button" data-language="es" aria-pressed="false">ES</button>
+        <button type="button" data-language="zh" aria-pressed="false">中文</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero">
+      <div class="wrap">
+        <div>
+          <span class="pill"><img src="./assets/logo.svg" alt=""><span data-i18n="pill">Coming soon to Android and iOS</span></span>
+          <h1 data-i18n="hero_title">Send tasks.
+Keep everyone on <em>track</em>.</h1>
+          <p class="lead" data-i18n="hero_lead">TaskMe is a task app for the people close to you. Send a task to your family or friends, set a deadline, add a reminder — and know the moment it’s done.</p>
+          <div class="stores">
+            <a class="store" data-store="play" href="#download"><small data-i18n="soon">Coming soon on</small><span>Google Play</span></a>
+            <a class="store" data-store="apple" href="#download"><small data-i18n="soon">Coming soon on</small><span>App Store</span></a>
+          </div>
+        </div>
+
+        <div class="stage" aria-hidden="true">
+          <div class="device">
+            <div class="screen">
+              <div class="island"></div><div class="sb"><span>9:41</span><span class="ind"><svg viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg><svg viewBox="0 0 16 12"><path d="M8 2.6c2.3 0 4.4.9 6 2.4l1.3-1.4A10.3 10.3 0 0 0 8 .6 10.3 10.3 0 0 0 .7 3.6L2 5c1.6-1.5 3.7-2.4 6-2.4Zm0 3.8c1.3 0 2.5.5 3.4 1.3l1.3-1.4A6.7 6.7 0 0 0 8 4.4c-1.8 0-3.4.7-4.7 1.9l1.3 1.4C5.5 6.9 6.7 6.4 8 6.4Zm0 3.7L9.9 8.1A2.8 2.8 0 0 0 8 7.4c-.7 0-1.4.3-1.9.7L8 10.1Z"/></svg><svg viewBox="0 0 27 12"><rect x=".5" y=".5" width="23" height="11" rx="3.2" fill="none" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="20" height="8" rx="2"/><path d="M25 4v4c.8-.3 1.4-1.1 1.4-2S25.8 4.3 25 4Z" opacity=".45"/></svg></span></div>
+              <div class="t-head"><b data-i18n="m_tasks">Tasks</b><span class="hist"><svg viewBox="0 0 256 256" aria-hidden="true"><path d="M136,80v43.47l36.12,21.67a8,8 0 0,1 -8.24,13.72l-40,-24A8,8 0 0,1 120,128V80a8,8 0 0,1 16,0Zm-8,-48A95.44,95.44 0 0,0 60.08,60.15C52.81,67.51 46.35,74.59 40,82V64a8,8 0 0,0 -16,0v40a8,8 0 0,0 8,8H72a8,8 0 0,0 0,-16H49c7.15,-8.42 14.27,-16.35 22.39,-24.57a80,80 0 1,1 1.66,114.75a8,8 0 1,0 -11,11.64A96,96 0 1,0 128,32Z"/></svg></span></div>
+              <div class="t-list">
+                <div class="sec"><b data-i18n="m_in_progress_sec">In Progress</b><span>2</span></div>
+                <div class="card">
+                  <div class="row"><img class="av" src="./assets/avatars/avatar_003.svg" alt=""><div class="txt"><div class="tt" data-i18n="r1_t">Pick up the parcel on your way home</div><div class="mt" data-i18n="r1_m">From Emma · in 3 hours</div></div><span class="bell" style="color:#5a34cf"><svg viewBox="0 0 256 256" aria-hidden="true"><path d="M223.05,69.33A6,6 0 0,1 215,66.76A96,96 0 0,0 180.8,29.08a6,6 0 0,1 6.4,-10.15a109.26,109.26 0 0,1 38.41,42.31A6,6 0 0,1 223.05,69.33ZM41,66.76A96,96 0 0,1 75.2,29.08a6,6 0 0,0 -6.4,-10.15A109.26,109.26 0 0,0 30.39,61.24A6,6 0 1,0 41,66.76Zm179,110.18A14,14 0 0,1 208,198h-42.5a38,38 0 0,1 -75,0H48a14,14 0 0,1 -12.06,-21.06C45.13,161.09 50,138.63 50,112a78,78 0 0,1 156,0C206,139 210.74,160.86 220.08,176.94ZM153.29,198H102.71a26,26 0 0,0 50.58,0Zm56.42,-15C199.29,165 194,141.15 194,112a66,66 0 0,0 -132,0c0,29.16 -5.29,53 -15.71,71a2,2 0 0,0 0,2a1.9,1.9 0 0,0 1.7,1H208a1.9,1.9 0 0,0 1.7,-1A2,2 0 0,0 209.71,183Z"/></svg></span><span class="tag progress" data-i18n="st_progress">In Progress</span></div>
+                  <div class="row"><img class="av" src="./assets/avatars/avatar_009.svg" alt=""><div class="txt"><div class="tt" data-i18n="r2_t">Come home for dinner on Sunday</div><div class="mt" data-i18n="r2_m">From Linda · in 3 days</div></div><span class="tag progress" data-i18n="st_progress">In Progress</span></div>
+                </div>
+                <div class="sec"><b data-i18n="m_recent_sec">Recently Sent</b><span>3</span></div>
+                <div class="card">
+                  <div class="row"><img class="av" src="./assets/avatars/avatar_005.svg" alt=""><div class="txt"><div class="tt" data-i18n="r3_t">Son, take the meat out of the freezer to thaw</div><div class="mt" data-i18n="r3_m">To Leo</div></div><span class="tag done" data-i18n="st_done">Completed</span></div>
+                  <div class="row"><img class="av" src="./assets/avatars/avatar_007.svg" alt=""><div class="txt"><div class="tt" data-i18n="r4_t">Tidy up your room this weekend</div><div class="mt" data-i18n="r4_m">To Lily · in 2 days</div></div><span class="tag progress" data-i18n="st_progress">In Progress</span></div>
+                  <div class="row"><img class="av" src="./assets/avatars/avatar_004.svg" alt=""><div class="txt"><div class="tt" data-i18n="r5_t">Check when the car needs a service</div><div class="mt" data-i18n="r5_m">To Robert</div></div><span class="tag pending" data-i18n="st_pending">Pending</span></div>
+                </div>
+              </div>
+              <span class="fab"><svg viewBox="0 0 256 256" aria-hidden="true"><path d="M228,128a12,12 0 0,1 -12,12H140v76a12,12 0 0,1 -24,0V140H40a12,12 0 0,1 0,-24h76V40a12,12 0 0,1 24,0v76h76A12,12 0 0,1 228,128Z"/></svg></span>
+              <div class="navbar">
+                <span><svg viewBox="0 0 256 256" aria-hidden="true"><path d="M112.6,158.43a58,58 0 1,0 -57.2,0A93.83,93.83 0 0,0 5.21,196.72a6,6 0 0,0 10.05,6.56a82,82 0 0,1 137.48,0a6,6 0 0,0 10,-6.56A93.83,93.83 0 0,0 112.6,158.43ZM38,108a46,46 0 1,1 46,46A46.06,46.06 0 0,1 38,108Zm211,97a6,6 0 0,1 -8.3,-1.74A81.8,81.8 0 0,0 172,166a6,6 0 0,1 0,-12a46,46 0 1,0 -17.08,-88.73a6,6 0 1,1 -4.46,-11.14a58,58 0 0,1 50.14,104.3a93.83,93.83 0 0,1 50.19,38.29A6,6 0 0,1 249,205Z"/></svg><span data-i18n="m_friends">Friends</span></span>
+                <span class="on"><svg viewBox="0 0 256 256" aria-hidden="true"><path d="M243.31,90.91l-128.4,128.4a16,16 0 0,1 -22.62,0l-71.62,-72a16,16 0 0,1 0,-22.61l20,-20a16,16 0 0,1 22.58,0L104,144.22l96.76,-95.57a16,16 0 0,1 22.59,0l19.95,19.54A16,16 0 0,1 243.31,90.91Z"/></svg><span data-i18n="m_tasks">Tasks</span></span>
+                <span><img src="./assets/avatars/avatar_002.svg" alt=""><span data-i18n="m_profile">Profile</span></span>
+              </div>
+              <div class="home-ind"></div>
+            </div>
+          </div>
+          <div class="notif">
+            <div class="app"><img src="./assets/logo.svg" alt=""><span>TaskMe · <span data-i18n="n_now">now</span></span></div>
+            <div class="nt" data-i18n="n_title">Task completed</div>
+            <div class="nb" data-i18n="r3_t">Son, take the meat out of the freezer to thaw</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Send a task (New task sheet) -->
+    <section class="block tinted showcase" id="send">
+      <div class="wrap">
+        <div class="stage" aria-hidden="true">
+          <div class="device">
+            <div class="screen">
+              <div class="island"></div><div class="sb"><span>9:41</span><span class="ind"><svg viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg><svg viewBox="0 0 16 12"><path d="M8 2.6c2.3 0 4.4.9 6 2.4l1.3-1.4A10.3 10.3 0 0 0 8 .6 10.3 10.3 0 0 0 .7 3.6L2 5c1.6-1.5 3.7-2.4 6-2.4Zm0 3.8c1.3 0 2.5.5 3.4 1.3l1.3-1.4A6.7 6.7 0 0 0 8 4.4c-1.8 0-3.4.7-4.7 1.9l1.3 1.4C5.5 6.9 6.7 6.4 8 6.4Zm0 3.7L9.9 8.1A2.8 2.8 0 0 0 8 7.4c-.7 0-1.4.3-1.9.7L8 10.1Z"/></svg><svg viewBox="0 0 27 12"><rect x=".5" y=".5" width="23" height="11" rx="3.2" fill="none" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="20" height="8" rx="2"/><path d="M25 4v4c.8-.3 1.4-1.1 1.4-2S25.8 4.3 25 4Z" opacity=".45"/></svg></span></div>
+              <div class="t-head"><b data-i18n="m_tasks">Tasks</b><span class="hist"><svg viewBox="0 0 256 256" aria-hidden="true"><path d="M136,80v43.47l36.12,21.67a8,8 0 0,1 -8.24,13.72l-40,-24A8,8 0 0,1 120,128V80a8,8 0 0,1 16,0Zm-8,-48A95.44,95.44 0 0,0 60.08,60.15C52.81,67.51 46.35,74.59 40,82V64a8,8 0 0,0 -16,0v40a8,8 0 0,0 8,8H72a8,8 0 0,0 0,-16H49c7.15,-8.42 14.27,-16.35 22.39,-24.57a80,80 0 1,1 1.66,114.75a8,8 0 1,0 -11,11.64A96,96 0 1,0 128,32Z"/></svg></span></div>
+              <div class="t-list">
+                <div class="sec"><b data-i18n="m_in_progress_sec">In Progress</b><span>2</span></div>
+                <div class="card">
+                  <div class="row"><img class="av" src="./assets/avatars/avatar_003.svg" alt=""><div class="txt"><div class="tt" data-i18n="r1_t">Pick up the parcel on your way home</div><div class="mt" data-i18n="r1_m">From Emma · in 3 hours</div></div><span class="tag progress" data-i18n="st_progress">In Progress</span></div>
+                  <div class="row"><img class="av" src="./assets/avatars/avatar_009.svg" alt=""><div class="txt"><div class="tt" data-i18n="r2_t">Come home for dinner on Sunday</div><div class="mt" data-i18n="r2_m">From Linda · in 3 days</div></div><span class="tag progress" data-i18n="st_progress">In Progress</span></div>
+                </div>
+              </div>
+              <div class="scrim"></div>
+              <div class="sheet">
+                <div class="handle"></div>
+                <div class="sheet-body">
+                  <div class="card">
+                    <div class="rcp"><img class="av" src="./assets/avatars/avatar_005.svg" alt=""><div class="txt"><div class="nm" data-i18n="son">Leo</div><div class="id">@leo_chen</div></div><span class="chev"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></span></div>
+                    <div class="ttl" data-i18n="ns_title">Be home for dinner by 7</div>
+                    <div class="div"></div>
+                    <div class="dsc" data-i18n="ns_desc">Pick up a bottle of soy sauce on the way.</div>
+                  </div>
+                  <div class="gap"></div>
+                  <div class="card">
+                    <div class="tog"><svg viewBox="0 0 256 256" aria-hidden="true"><path d="M232,136.66A104.12,104.12 0 1,1 119.34,24A8,8 0 0,1 120.66,40A88.12,88.12 0 1,0 216,135.34A8,8 0 0,1 232,136.66ZM120,72v56a8,8 0 0,0 8,8h56a8,8 0 0,0 0,-16H136V72a8,8 0 0,0 -16,0Zm40,-24a12,12 0 1,0 -12,-12A12,12 0 0,0 160,48Zm36,24a12,12 0 1,0 -12,-12A12,12 0 0,0 196,72Zm24,36a12,12 0 1,0 -12,-12A12,12 0 0,0 220,108Z"/></svg><b data-i18n="deadline">Deadline</b><span class="sw"></span></div>
+                    <div class="div"></div>
+                    <div class="val"><span class="lb" data-i18n="date">Date</span><span class="vv"><b data-i18n="date_v">Wed, Nov 18</b></span><span class="chev"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></span></div>
+                    <div class="chips"><span class="chip" data-i18n="q_today">Today</span><span class="chip on" data-i18n="q_tomorrow">Tomorrow</span><span class="chip" data-i18n="q_2">In 2 days</span><span class="chip" data-i18n="q_3">In 3 days</span></div>
+                    <div class="div"></div>
+                    <div class="val"><span class="lb" data-i18n="time">Time</span><span class="vv"><b>19:00</b><small data-i18n="left">1 day 3 hours left</small></span><span class="chev"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></span></div>
+                  </div>
+                </div>
+                <div class="submit"><svg viewBox="0 0 256 256" aria-hidden="true"><path d="M227.32,28.68a16,16 0 0,0 -15.66,-4.08l-0.15,0L19.57,82.84a16,16 0 0,0 -2.49,29.8L102,154l41.3,84.87A15.86,15.86 0 0,0 157.74,248q0.69,0 1.38,-0.06a15.88,15.88 0 0,0 14,-11.51l58.2,-191.94c0,-0.05 0,-0.1 0,-0.15A16,16 0 0,0 227.32,28.68ZM157.83,231.85l-0.05,0.14l0,-0.07l-40.06,-82.3l48,-48a8,8 0 0,0 -11.31,-11.31l-48,48L24.08,98.25l-0.07,0l0.14,0L216,40Z"/></svg><span data-i18n="send_son">Send to Leo</span></div>
+              </div>
+              <div class="home-ind"></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="eyebrow" data-i18n="sc_eyebrow">Send tasks</div>
+          <h2 data-i18n="sc_title">One task, one person, one deadline</h2>
+          <p class="lead" style="margin:0;color:var(--on-surface-variant);font-size:18px" data-i18n="sc_lead">Creating a task takes a few seconds. Choose who it’s for, write what needs doing, and pick when it’s due.</p>
+          <ul class="points">
+            <li><span class="ic"><svg viewBox="0 0 256 256" aria-hidden="true"><path d="M64.12,147.8a4,4 0 0,1 -4,4.2H16a8,8 0 0,1 -7.8,-6.17a8.35,8.35 0 0,1 1.62,-6.93A67.79,67.79 0 0,1 37,117.51a40,40 0 1,1 66.46,-35.8a3.94,3.94 0 0,1 -2.27,4.18A64.08,64.08 0 0,0 64,144C64,145.28 64,146.54 64.12,147.8Zm182,-8.91A67.76,67.76 0 0,0 219,117.51a40,40 0 1,0 -66.46,-35.8a3.94,3.94 0 0,0 2.27,4.18A64.08,64.08 0 0,1 192,144c0,1.28 0,2.54 -0.12,3.8a4,4 0 0,0 4,4.2H240a8,8 0 0,0 7.8,-6.17A8.33,8.33 0 0,0 246.17,138.89Zm-89,43.18a48,48 0 1,0 -58.37,0A72.13,72.13 0 0,0 65.07,212A8,8 0 0,0 72,224H184a8,8 0 0,0 6.93,-12A72.15,72.15 0 0,0 157.19,182.07Z"/></svg></span><div><h3 data-i18n="pt1_t">Send it to anyone close to you</h3><p data-i18n="pt1_p">Pick a friend or family member — or yourself, for your own to-dos.</p></div></li>
+            <li><span class="ic"><svg viewBox="0 0 256 256" aria-hidden="true"><path d="M232,136.66A104.12,104.12 0 1,1 119.34,24A8,8 0 0,1 120.66,40A88.12,88.12 0 1,0 216,135.34A8,8 0 0,1 232,136.66ZM120,72v56a8,8 0 0,0 8,8h56a8,8 0 0,0 0,-16H136V72a8,8 0 0,0 -16,0Zm40,-24a12,12 0 1,0 -12,-12A12,12 0 0,0 160,48Zm36,24a12,12 0 1,0 -12,-12A12,12 0 0,0 196,72Zm24,36a12,12 0 1,0 -12,-12A12,12 0 0,0 220,108Z"/></svg></span><div><h3 data-i18n="pt2_t">Set a clear deadline</h3><p data-i18n="pt2_p">Quick picks for today, tomorrow and the next days, or any date up to a year ahead.</p></div></li>
+            <li><span class="ic"><svg viewBox="0 0 256 256" aria-hidden="true"><path d="M229.66,77.66l-128,128a8,8 0 0,1 -11.32,0l-56,-56a8,8 0 0,1 11.32,-11.32L96,188.69L218.34,66.34a8,8 0 0,1 11.32,11.32Z"/></svg></span><div><h3 data-i18n="pt3_t">Know when it’s done</h3><p data-i18n="pt3_p">They accept the task and complete it in the app. You get notified the moment it’s finished.</p></div></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="block" id="features">
+      <div class="wrap">
+        <div class="head center">
+          <div class="eyebrow" data-i18n="f_eyebrow">Features</div>
+          <h2 data-i18n="f_title">Simple by design</h2>
+          <p data-i18n="f_lead">Everything you need to keep track of what matters, and nothing you don’t.</p>
+        </div>
+        <div class="features">
+          <article class="feature"><div class="ic"><svg viewBox="0 0 256 256" aria-hidden="true"><path d="M223.05,69.33A6,6 0 0,1 215,66.76A96,96 0 0,0 180.8,29.08a6,6 0 0,1 6.4,-10.15a109.26,109.26 0 0,1 38.41,42.31A6,6 0 0,1 223.05,69.33ZM41,66.76A96,96 0 0,1 75.2,29.08a6,6 0 0,0 -6.4,-10.15A109.26,109.26 0 0,0 30.39,61.24A6,6 0 1,0 41,66.76Zm179,110.18A14,14 0 0,1 208,198h-42.5a38,38 0 0,1 -75,0H48a14,14 0 0,1 -12.06,-21.06C45.13,161.09 50,138.63 50,112a78,78 0 0,1 156,0C206,139 210.74,160.86 220.08,176.94ZM153.29,198H102.71a26,26 0 0,0 50.58,0Zm56.42,-15C199.29,165 194,141.15 194,112a66,66 0 0,0 -132,0c0,29.16 -5.29,53 -15.71,71a2,2 0 0,0 0,2a1.9,1.9 0 0,0 1.7,1H208a1.9,1.9 0 0,0 1.7,-1A2,2 0 0,0 209.71,183Z"/></svg></div><h3 data-i18n="f1_t">Reminders before the deadline</h3><p data-i18n="f1_p">Turn on a reminder and TaskMe notifies you shortly before a task is due.</p></article>
+          <article class="feature"><div class="ic"><svg viewBox="0 0 256 256" aria-hidden="true"><path d="M208,32H184V24a8,8 0 0,0 -16,0v8H88V24a8,8 0 0,0 -16,0v8H48A16,16 0 0,0 32,48V208a16,16 0 0,0 16,16H208a16,16 0 0,0 16,-16V48A16,16 0 0,0 208,32ZM72,48v8a8,8 0 0,0 16,0V48h80v8a8,8 0 0,0 16,0V48h24V80H48V48ZM208,208H48V96H208V208Zm-38.34,-85.66a8,8 0 0,1 0,11.32l-48,48a8,8 0 0,1 -11.32,0l-24,-24a8,8 0 0,1 11.32,-11.32L116,164.69l42.34,-42.35A8,8 0 0,1 169.66,122.34Z"/></svg></div><h3 data-i18n="f2_t">Status at a glance</h3><p data-i18n="f2_p">In progress, completed, declined or expired — every task shows exactly where it stands.</p></article>
+          <article class="feature"><div class="ic"><svg viewBox="0 0 256 256" aria-hidden="true"><path d="M222,40V76a6,6 0 0,1 -12,0V46H180a6,6 0 0,1 0,-12h36A6,6 0 0,1 222,40Zm-6,134a6,6 0 0,0 -6,6v30H180a6,6 0 0,0 0,12h36a6,6 0 0,0 6,-6V180A6,6 0 0,0 216,174ZM76,210H46V180a6,6 0 0,0 -12,0v36a6,6 0 0,0 6,6H76a6,6 0 0,0 0,-12ZM40,82a6,6 0 0,0 6,-6V46H76a6,6 0 0,0 0,-12H40a6,6 0 0,0 -6,6V76A6,6 0 0,0 40,82Zm136,92a6,6 0 0,1 -4.8,-2.4a54,54 0 0,0 -86.4,0a6,6 0 1,1 -9.6,-7.2a65.65,65.65 0 0,1 29.69,-22.26a38,38 0 1,1 46.22,0A65.65,65.65 0 0,1 180.8,164.4A6,6 0 0,1 176,174Zm-48,-36a26,26 0 1,0 -26,-26A26,26 0 0,0 128,138Z"/></svg></div><h3 data-i18n="f3_t">Tasks for yourself</h3><p data-i18n="f3_p">Use the same simple flow for your own to-dos, kept alongside the tasks you share.</p></article>
+          <article class="feature"><div class="ic"><svg viewBox="0 0 256 256" aria-hidden="true"><path d="M254,136a6,6 0 0,1 -6,6H230v18a6,6 0 0,1 -12,0V142H200a6,6 0 0,1 0,-12h18V112a6,6 0 0,1 12,0v18h18A6,6 0 0,1 254,136Zm-57.41,60.14a6,6 0 1,1 -9.18,7.72C166.9,179.45 138.69,166 108,166s-58.89,13.45 -79.41,37.86a6,6 0 0,1 -9.18,-7.72C35.14,177.41 55,164.48 77,158.25a66,66 0 1,1 62,0C161,164.48 180.86,177.41 196.59,196.14ZM108,154a54,54 0 1,0 -54,-54A54.06,54.06 0 0,0 108,154Z"/></svg></div><h3 data-i18n="f4_t">Friends by TaskMe ID</h3><p data-i18n="f4_p">Add people with their TaskMe ID. Only friends can send you tasks, and you can block anyone at any time.</p></article>
+          <article class="feature"><div class="ic"><svg viewBox="0 0 256 256" aria-hidden="true"><path d="M136,80v43.47l36.12,21.67a8,8 0 0,1 -8.24,13.72l-40,-24A8,8 0 0,1 120,128V80a8,8 0 0,1 16,0Zm-8,-48A95.44,95.44 0 0,0 60.08,60.15C52.81,67.51 46.35,74.59 40,82V64a8,8 0 0,0 -16,0v40a8,8 0 0,0 8,8H72a8,8 0 0,0 0,-16H49c7.15,-8.42 14.27,-16.35 22.39,-24.57a80,80 0 1,1 1.66,114.75a8,8 0 1,0 -11,11.64A96,96 0 1,0 128,32Z"/></svg></div><h3 data-i18n="f5_t">Full history</h3><p data-i18n="f5_p">Look back at every task you’ve sent and received, and how each one turned out.</p></article>
+          <article class="feature"><div class="ic"><svg viewBox="0 0 256 256" aria-hidden="true"><path d="M227.32,28.68a16,16 0 0,0 -15.66,-4.08l-0.15,0L19.57,82.84a16,16 0 0,0 -2.49,29.8L102,154l41.3,84.87A15.86,15.86 0 0,0 157.74,248q0.69,0 1.38,-0.06a15.88,15.88 0 0,0 14,-11.51l58.2,-191.94c0,-0.05 0,-0.1 0,-0.15A16,16 0 0,0 227.32,28.68ZM157.83,231.85l-0.05,0.14l0,-0.07l-40.06,-82.3l48,-48a8,8 0 0,0 -11.31,-11.31l-48,48L24.08,98.25l-0.07,0l0.14,0L216,40Z"/></svg></div><h3 data-i18n="f6_t">Instant notifications</h3><p data-i18n="f6_p">Know right away when you receive a task, or when one you sent is accepted or completed.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="block tinted" id="how">
+      <div class="wrap">
+        <div class="head center">
+          <div class="eyebrow" data-i18n="h_eyebrow">How it works</div>
+          <h2 data-i18n="h_title">Up and running in a minute</h2>
+          <p data-i18n="h_lead">No setup, no teams to configure. Just you and the people you trust.</p>
+        </div>
+        <div class="steps">
+          <div class="step"><h3 data-i18n="s1_t">Sign in with Google</h3><p data-i18n="s1_p">Continue with your Google account and your TaskMe account is ready.</p></div>
+          <div class="step"><h3 data-i18n="s2_t">Add your people</h3><p data-i18n="s2_p">Search for friends and family by their TaskMe ID and send a request.</p></div>
+          <div class="step"><h3 data-i18n="s3_t">Send your first task</h3><p data-i18n="s3_p">Write the task, set a deadline and a reminder, and follow it until it’s done.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Download -->
+    <section class="cta" id="download">
+      <div class="wrap">
+        <div class="cta-box">
+          <div>
+            <h2 data-i18n="c_title">Coming soon to your phone</h2>
+            <p data-i18n="c_lead">TaskMe is launching on Google Play and the App Store.</p>
+          </div>
+          <div class="stores light">
+            <a class="store" data-store="play" href="#download"><small data-i18n="soon">Coming soon on</small><span>Google Play</span></a>
+            <a class="store" data-store="apple" href="#download"><small data-i18n="soon">Coming soon on</small><span>App Store</span></a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div>
+        <img src="./assets/logo_text.svg" alt="TaskMe">
+        <p data-i18n="footer_by">TaskMe is made by GerboMind.</p>
+        <p>© <span data-year>2026</span> GerboMind</p>
+      </div>
+      <nav aria-label="Footer">
+        <a href="./privacy/" data-privacy-link data-i18n="footer_privacy">Privacy Policy</a>
+        <a href="mailto:gerbomind@gmail.com" data-i18n="footer_contact">Contact</a>
+        <a href="mailto:gerbomind@gmail.com">gerbomind@gmail.com</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      // Fill in the store URLs once the app is published; the buttons switch from "Coming soon on" to "Get it on" / "Download on".
+      const STORE_URLS = { play: '', apple: '' };
+
+      const t = {
+        es: {
+          _title: 'TaskMe · Envía tareas. Que nada se olvide.',
+          nav_send: 'Enviar tareas', nav_features: 'Funciones', nav_how: 'Cómo funciona',
+          pill: 'Próximamente en Android e iOS',
+          hero_title: 'Envía tareas.\nQue nada se <em>olvide</em>.',
+          hero_lead: 'TaskMe es una app de tareas para las personas cercanas. Envía una tarea a tu familia o a tus amigos, fija una fecha límite, añade un recordatorio y entérate en cuanto esté hecha.',
+          soon: 'Próximamente en', live_play: 'Disponible en', live_apple: 'Descárgala en',
+          m_tasks: 'Tareas', m_in_progress_sec: 'En Curso', m_recent_sec: 'Enviadas recientemente', m_friends: 'Amigos', m_profile: 'Perfil',
+          r1_t: 'Recoge el paquete al volver a casa', r1_m: 'De Lucía · dentro de 3 horas',
+          r2_t: 'Ven a comer a casa el domingo', r2_m: 'De Carmen · dentro de 3 días',
+          r3_t: 'Hijo, saca la carne del congelador para que se descongele', r3_m: 'Para Leo',
+          r4_t: 'Ordena tu habitación este fin de semana', r4_m: 'Para Sofía · dentro de 2 días',
+          r5_t: 'Mira cuándo toca la revisión del coche', r5_m: 'Para Antonio',
+          st_progress: 'En Curso', st_done: 'Completada', st_pending: 'Pendiente',
+          n_now: 'ahora', n_title: 'Tarea completada',
+          son: 'Leo', ns_title: 'Vuelve a casa para cenar antes de las 7', ns_desc: 'De camino, compra una botella de salsa de soja.',
+          deadline: 'Fecha límite', date: 'Fecha', date_v: 'mié, 18 nov', time: 'Hora', left: 'Quedan 1 día 3 horas',
+          q_today: 'Hoy', q_tomorrow: 'Mañana', q_2: 'Pasado mañana', q_3: 'En 3 días', send_son: 'Enviar a Leo',
+          sc_eyebrow: 'Enviar tareas', sc_title: 'Una tarea, una persona, una fecha límite', sc_lead: 'Crear una tarea lleva unos segundos. Elige para quién es, escribe lo que hay que hacer y decide cuándo vence.',
+          pt1_t: 'Envíala a quien quieras', pt1_p: 'Elige a un amigo o familiar, o a ti mismo para tus propias tareas.',
+          pt2_t: 'Una fecha límite clara', pt2_p: 'Accesos rápidos para hoy, mañana y los próximos días, o cualquier fecha de aquí a un año.',
+          pt3_t: 'Entérate cuando esté hecha', pt3_p: 'La otra persona acepta la tarea y la completa en la app. Recibes un aviso en cuanto la termina.',
+          f_eyebrow: 'Funciones', f_title: 'Sencilla por diseño', f_lead: 'Todo lo que necesitas para no perder de vista lo importante, y nada más.',
+          f1_t: 'Recordatorios antes del plazo', f1_p: 'Activa un recordatorio y TaskMe te avisará poco antes de que venza la tarea.',
+          f2_t: 'El estado de un vistazo', f2_p: 'En curso, completada, rechazada o expirada: cada tarea muestra exactamente en qué punto está.',
+          f3_t: 'Tareas para ti', f3_p: 'Usa el mismo flujo sencillo para tus propias tareas, junto a las que compartes.',
+          f4_t: 'Amigos por ID de TaskMe', f4_p: 'Añade a otras personas con su ID de TaskMe. Solo tus amigos pueden enviarte tareas y puedes bloquear a quien quieras.',
+          f5_t: 'Historial completo', f5_p: 'Consulta todas las tareas que has enviado y recibido, y cómo terminó cada una.',
+          f6_t: 'Notificaciones al instante', f6_p: 'Entérate en cuanto recibes una tarea o cuando una que enviaste se acepta o se completa.',
+          h_eyebrow: 'Cómo funciona', h_title: 'Listo en un minuto', h_lead: 'Sin configuraciones ni equipos. Solo tú y las personas en las que confías.',
+          s1_t: 'Inicia sesión con Google', s1_p: 'Continúa con tu cuenta de Google y tu cuenta de TaskMe estará lista.',
+          s2_t: 'Añade a los tuyos', s2_p: 'Busca a tus amigos y familiares por su ID de TaskMe y envíales una solicitud.',
+          s3_t: 'Envía tu primera tarea', s3_p: 'Escribe la tarea, fija una fecha límite y un recordatorio, y síguela hasta que esté hecha.',
+          c_title: 'Muy pronto en tu móvil', c_lead: 'TaskMe llegará a Google Play y a la App Store.',
+          footer_by: 'TaskMe es una app de GerboMind.', footer_privacy: 'Política de privacidad', footer_contact: 'Contacto'
+        },
+        zh: {
+          _title: 'TaskMe · 所托有应，所念不忘',
+          nav_send: '发送任务', nav_features: '功能', nav_how: '使用方式',
+          pill: '即将登陆 Android 与 iOS',
+          hero_title: '所托有应，\n所念<em>不忘</em>',
+          hero_lead: 'TaskMe 是为身边的人准备的任务应用。把任务发给家人或朋友，设定截止时间、加上提醒，完成的那一刻你就会知道。',
+          soon: '即将登陆', live_play: '立即下载', live_apple: '立即下载',
+          m_tasks: '任务', m_in_progress_sec: '进行中', m_recent_sec: '最近发出', m_friends: '好友', m_profile: '我',
+          r1_t: '下班顺路取一下快递', r1_m: '来自 子涵 · 3小时后',
+          r2_t: '周日回家吃饭', r2_m: '来自 春暖花开 · 3天后',
+          r3_t: '儿子，把冰箱里的肉拿出来化了', r3_m: '发给 霸王龙',
+          r4_t: '周末把房间收拾一下', r4_m: '发给 晨风 · 2天后',
+          r5_t: '查一下车什么时候该保养', r5_m: '发给 建国',
+          st_progress: '进行中', st_done: '已完成', st_pending: '待接受',
+          n_now: '刚刚', n_title: '任务已完成',
+          son: '霸王龙', ns_title: '晚上七点前回家吃饭', ns_desc: '路上顺便买一瓶酱油。',
+          deadline: '截止时间', date: '日期', date_v: '11月18日 周三', time: '时间', left: '还剩 1天 3时',
+          q_today: '今天', q_tomorrow: '明天', q_2: '后天', q_3: '大后天', send_son: '发送给 霸王龙',
+          sc_eyebrow: '发送任务', sc_title: '一件事，交给一个人', sc_lead: '几秒钟就能创建一个任务：选好发给谁，写下要做的事，定好截止时间。',
+          pt1_t: '发给身边的任何人', pt1_p: '选择家人或朋友，也可以发给自己，当作自己的待办。',
+          pt2_t: '清楚的截止时间', pt2_p: '今天、明天、后天一键选择，也可以设定一年内的任意日期。',
+          pt3_t: '完成了，你就知道', pt3_p: '对方在 App 里接受并完成任务，完成的那一刻你会收到通知。',
+          f_eyebrow: '功能', f_title: '简单，是有意为之', f_lead: '记住重要的事所需要的一切，没有多余的东西。',
+          f1_t: '截止前提醒', f1_p: '开启提醒后，TaskMe 会在任务到期前通知你。',
+          f2_t: '状态一目了然', f2_p: '进行中、已完成、已拒绝、已过期，每个任务的进展都清清楚楚。',
+          f3_t: '给自己创建任务', f3_p: '自己的待办用同样简单的方式创建，和共享的任务放在一起。',
+          f4_t: '通过 TaskMe ID 加好友', f4_p: '用 TaskMe ID 添加好友。只有好友才能给你发任务，你也可以随时拉黑任何人。',
+          f5_t: '完整的历史记录', f5_p: '回看所有发出和收到的任务，以及每个任务的结果。',
+          f6_t: '即时通知', f6_p: '收到新任务，或你发出的任务被接受、被完成时，第一时间知道。',
+          h_eyebrow: '使用方式', h_title: '一分钟就能上手', h_lead: '无需配置，也不用建团队。只有你和你信任的人。',
+          s1_t: '使用 Google 登录', s1_p: '用你的 Google 账号继续，TaskMe 账号即刻就绪。',
+          s2_t: '添加家人和朋友', s2_p: '通过 TaskMe ID 搜索家人和朋友，发送好友请求。',
+          s3_t: '发出第一个任务', s3_p: '写好任务，设置截止时间和提醒，然后等它完成。',
+          c_title: '即将来到你的手机', c_lead: 'TaskMe 即将登陆 Google Play 与 App Store。',
+          footer_by: 'TaskMe 由 GerboMind 开发。', footer_privacy: '隐私政策', footer_contact: '联系我们'
+        }
+      };
+
+      const nodes = document.querySelectorAll('[data-i18n]');
+      const en = { _title: document.title, live_play: 'Get it on', live_apple: 'Download on the' };
+      nodes.forEach(function (n) { if (!(n.dataset.i18n in en)) en[n.dataset.i18n] = n.innerHTML; });
+      t.en = en;
+
+      document.querySelectorAll('[data-store]').forEach(function (a) {
+        const url = STORE_URLS[a.dataset.store];
+        if (url) { a.href = url; a.target = '_blank'; a.rel = 'noopener'; }
+        else { a.classList.add('soon'); a.setAttribute('aria-disabled', 'true'); a.removeAttribute('href'); }
+      });
+
+      const sw = document.querySelector('.lang');
+      const supported = ['en', 'es', 'zh'];
+      function show(lang) {
+        const d = t[lang];
+        document.documentElement.lang = lang === 'zh' ? 'zh-CN' : lang;
+        document.title = d._title;
+        nodes.forEach(function (n) {
+          let key = n.dataset.i18n;
+          const store = n.closest('[data-store]');
+          if (key === 'soon' && store && STORE_URLS[store.dataset.store]) key = 'live_' + store.dataset.store;
+          n.innerHTML = d[key] != null ? d[key] : en[key];
+        });
+        document.querySelectorAll('[data-privacy-link]').forEach(function (a) { a.href = './privacy/?lang=' + lang; });
+        document.querySelectorAll('[data-language]').forEach(function (b, i) {
+          const on = b.dataset.language === lang;
+          b.setAttribute('aria-pressed', String(on));
+          if (on) sw.style.setProperty('--index', i);
+        });
+      }
+      document.querySelectorAll('[data-language]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          history.replaceState(null, '', location.pathname + '?lang=' + b.dataset.language + location.hash);
+          show(b.dataset.language);
+        });
+      });
+      const q = new URLSearchParams(location.search).get('lang');
+      const nav = (navigator.language || 'en').toLowerCase().split('-')[0];
+      show(supported.indexOf(q) >= 0 ? q : (supported.indexOf(nav) >= 0 ? nav : 'en'));
+
+      document.querySelectorAll('[data-year]').forEach(function (n) { n.textContent = new Date().getFullYear(); });
+      const header = document.querySelector('.header');
+      const onScroll = function () { header.classList.toggle('scrolled', window.scrollY > 8); };
+      window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
+    }());
+  </script>
+</body>
+</html>
