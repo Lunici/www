@@ -1,51 +1,134 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>GerboMind</title>
-    <style> * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>GerboMind</title>
+  <meta name="description" content="GerboMind makes TaskMe, a task app for the people close to you.">
+  <link rel="canonical" href="https://www.gerbomind.com/">
+  <link rel="preload" href="./assets/fonts/montserrat-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <style>
+    @font-face {
+      font-family: "Montserrat";
+      font-style: normal;
+      font-weight: 600;
+      font-display: swap;
+      src: url("./assets/fonts/montserrat-latin-600-normal.woff2") format("woff2");
     }
 
-    body {
-        min-height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background: #ffffff;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    :root {
+      color-scheme: light;
+      --primary: #5a34cf;
+      --on-surface: #1c1b1f;
+      --on-surface-variant: #49454f;
+      --secondary-text: #5f5b66;
+      --muted: #79747e;
+      --outline: #e0e0e0;
+      --track: #f3f4f6;
+      --page-tint: #f8f7fb;
+      --surface: #fff;
+      --shadow-low: 0 2px 6px rgba(0, 0, 0, .12);
+      font-family: Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
     }
 
-    .container {
-        text-align: center;
-    }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; color: var(--on-surface); background: var(--surface); -webkit-font-smoothing: antialiased; }
+    img, svg { display: block; }
 
-    h1 {
-        font-size: 72px;
-        font-weight: 700;
-        letter-spacing: -2px;
-    }
+    .topbar { display: flex; justify-content: flex-end; padding: 24px; }
 
-    p {
-        margin-top: 12px;
-        font-size: 20px;
-        color: #888888;
-        font-weight: 400;
-    }
+    .lang { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); padding: 3px; border-radius: 999px; background: var(--track); }
+    .lang .thumb { position: absolute; top: 3px; bottom: 3px; left: 3px; width: calc((100% - 6px) / 3); border-radius: 999px; background: var(--surface); box-shadow: var(--shadow-low); transform: translateX(calc(var(--index, 0) * 100%)); transition: transform .25s cubic-bezier(.4, 0, .2, 1); }
+    .lang button { position: relative; z-index: 1; min-width: 50px; border: 0; padding: 6px 10px; color: var(--on-surface-variant); background: transparent; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .lang button[aria-pressed="true"] { color: var(--on-surface); font-weight: 700; }
+
+    main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 24px 96px; }
+
+    h1 { margin: 0; font-family: Montserrat, sans-serif; font-weight: 600; font-size: clamp(48px, 7vw, 80px); line-height: 1.1; letter-spacing: -.01em; }
+
+    .products { width: 100%; max-width: 420px; margin: 40px 0 0; padding: 0; list-style: none; border-top: 1px solid var(--outline); }
+    .products li { border-bottom: 1px solid var(--outline); }
+    .product { display: flex; align-items: center; gap: 14px; padding: 16px 12px; color: var(--on-surface); text-decoration: none; transition: background .2s; }
+    .product:hover, .product:focus-visible { background: var(--page-tint); }
+    .product:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; }
+    .product img { width: 32px; height: 32px; flex-shrink: 0; }
+    .product .text { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .product .name { font-size: 16px; font-weight: 600; }
+    .product .tagline { font-size: 14px; color: var(--secondary-text); }
+    .product .go { width: 18px; height: 18px; flex-shrink: 0; color: var(--muted); fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform .2s, color .2s; }
+    .product:hover .go, .product:focus-visible .go { color: var(--primary); transform: translateX(3px); }
 
     @media (max-width: 600px) {
-        h1 {
-            font-size: 48px;
-        }
-
-        p {
-            font-size: 17px;
-        }
-    } </style>
+      .topbar { padding: 16px; }
+      .lang button { min-width: 42px; padding: 5px 7px; font-size: 12px; }
+    }
+  </style>
 </head>
 <body>
-<div class="container"><h1>GerboMind</h1>
-    <p>Coming soon</p></div>
+  <header class="topbar">
+    <div class="lang" role="group" aria-label="Language">
+      <span class="thumb" aria-hidden="true"></span>
+      <button type="button" data-language="en" aria-pressed="true">EN</button>
+      <button type="button" data-language="es" aria-pressed="false">ES</button>
+      <button type="button" data-language="zh" aria-pressed="false">中文</button>
+    </div>
+  </header>
+
+  <main>
+    <h1>GerboMind</h1>
+    <ul class="products">
+      <li>
+        <a class="product" href="./taskme/" data-product-link>
+          <img src="./taskme/assets/logo.svg" alt="">
+          <span class="text">
+            <span class="name">TaskMe</span>
+            <span class="tagline" data-i18n="taskme_tagline">Send tasks to the people close to you</span>
+          </span>
+          <svg class="go" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        </a>
+      </li>
+    </ul>
+  </main>
+
+  <script>
+    (function () {
+      const t = {
+        es: { taskme_tagline: 'Envía tareas a las personas cercanas' },
+        zh: { taskme_tagline: '把任务发给身边的人' }
+      };
+
+      const nodes = document.querySelectorAll('[data-i18n]');
+      const en = {};
+      nodes.forEach(function (n) { en[n.dataset.i18n] = n.textContent; });
+      t.en = en;
+
+      const sw = document.querySelector('.lang');
+      const supported = ['en', 'es', 'zh'];
+      function show(lang) {
+        const d = t[lang];
+        document.documentElement.lang = lang === 'zh' ? 'zh-CN' : lang;
+        nodes.forEach(function (n) {
+          const key = n.dataset.i18n;
+          n.textContent = d[key] != null ? d[key] : en[key];
+        });
+        document.querySelectorAll('[data-product-link]').forEach(function (a) { a.href = './taskme/?lang=' + lang; });
+        document.querySelectorAll('[data-language]').forEach(function (b, i) {
+          const on = b.dataset.language === lang;
+          b.setAttribute('aria-pressed', String(on));
+          if (on) sw.style.setProperty('--index', i);
+        });
+      }
+      document.querySelectorAll('[data-language]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          history.replaceState(null, '', location.pathname + '?lang=' + b.dataset.language);
+          show(b.dataset.language);
+        });
+      });
+      const q = new URLSearchParams(location.search).get('lang');
+      const nav = (navigator.language || 'en').toLowerCase().split('-')[0];
+      show(supported.indexOf(q) >= 0 ? q : (supported.indexOf(nav) >= 0 ? nav : 'en'));
+    }());
+  </script>
 </body>
+</html>
