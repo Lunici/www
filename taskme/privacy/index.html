@@ -28,6 +28,7 @@
     a:hover { color: var(--primary-pressed); text-decoration: underline; text-underline-offset: .16em; }
     .shell { max-width: 760px; margin: 0 auto; padding: 24px 20px 64px; }
     .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 36px; }
+    .brand-link { display: block; }
     .brand { display: block; width: 132px; height: auto; }
     .language-switch { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); padding: 3px; border-radius: 999px; background: var(--track); }
     .language-switch .thumb { position: absolute; top: 3px; bottom: 3px; left: 3px; width: calc((100% - 6px) / 3); border-radius: 999px; background: var(--surface); box-shadow: var(--shadow-low); transform: translateX(calc(var(--index, 0) * 100%)); transition: transform .25s cubic-bezier(.4, 0, .2, 1); }
@@ -66,7 +67,7 @@
 <body>
   <div class="shell">
     <header class="topbar">
-      <img class="brand" src="./logo_text.svg" alt="TaskMe">
+      <a class="brand-link" href="../" data-home-link><img class="brand" src="./logo_text.svg" alt="TaskMe"></a>
       <nav class="language-switch" aria-label="Policy language">
         <span class="thumb" aria-hidden="true"></span>
         <button type="button" data-language="en" aria-pressed="true">EN</button>
@@ -185,6 +186,7 @@
       function show(language) {
         document.documentElement.lang = language === 'zh' ? 'zh-CN' : language;
         document.title = ({ en: 'Privacy Policy', zh: '隐私政策', es: 'Política de privacidad' })[language] + ' · TaskMe';
+        document.querySelectorAll('[data-home-link]').forEach(function (link) { link.href = '../?lang=' + language; });
         document.querySelectorAll('[data-policy-language]').forEach(function (article) {
           article.hidden = article.dataset.policyLanguage !== language;
         });
